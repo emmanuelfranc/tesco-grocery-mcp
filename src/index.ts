@@ -9,6 +9,7 @@ import { registerSearchTools } from "./tools/search.js";
 import { registerBasketTools } from "./tools/basket.js";
 import { registerBrowseTools } from "./tools/browse.js";
 import { registerSlotTools } from "./tools/slots.js";
+import { registerIngredientTools } from "./tools/ingredients.js";
 
 function loadVersion(): string {
   const require = createRequire(import.meta.url);
@@ -32,6 +33,7 @@ registerSearchTools(server);
 registerBasketTools(server);
 registerBrowseTools(server);
 registerSlotTools(server);
+registerIngredientTools(server);
 
 // Connect via stdio transport
 const transport = new StdioServerTransport();

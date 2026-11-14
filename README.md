@@ -30,6 +30,49 @@ An [MCP](https://modelcontextprotocol.io) server that wraps Tesco's grocery APIs
 | `add_to_basket` | Add products or change quantities |
 | `remove_from_basket` | Remove products from basket |
 
+### Ingredient Preparation
+
+| Tool | Description |
+|------|-------------|
+| `prepare_ingredient_list` | Validate and combine supplied ingredients with a weekly budget target |
+| `calculate_ingredient_packs` | Calculate whole packs from a required quantity and confirmed pack size |
+
+Paste your ingredient list and ideal weekly budget into your assistant. The
+assistant converts the list into structured input for `prepare_ingredient_list`:
+
+```json
+{
+  "idealBudget": 60,
+  "ingredients": [
+    { "name": "chicken breast", "quantity": 600, "unit": "g" },
+    { "name": "onion", "quantity": 3, "unit": "each" }
+  ]
+}
+```
+
+Supported units are `g`, `kg`, `ml`, `l`, and `each`. Names are trimmed and
+matching names (ignoring case and extra whitespace) with compatible units are
+combined. Fresh/dried variants and weight/count measurements remain separate.
+Quantities must be positive; `each` requires a whole number. Ask about missing
+quantities or unsupported units rather than guessing. Pantry deductions should
+be reflected in the list before submission.
+
+Clubcard is always enabled for this personal workflow. The budget is a positive
+GBP target for the **whole grocery basket**, including existing items and
+excluding delivery charges. Preparation returns these settings; comparing the
+priced basket against the target is a later shopping step.
+
+For `calculate_ingredient_packs`, supply `required` and an optional `packSize`,
+each containing `quantity` and `unit`. For example, 600 g required with a 400 g
+pack returns two packs and 800 g purchased. Use the confirmed total quantity per
+pack (including multipacks); unit price is not pack size. Unknown or incompatible
+sizes return `resolved: false`. Existing basket quantities must be accounted for
+by the shopping workflow before calculating additional packs.
+
+These preparation tools do not contact Tesco, select products, or change your
+basket. They do not persist lists between calls. Existing shopping tools remain
+available separately.
+
 ### Delivery Slots
 
 | Tool | Description |
@@ -64,6 +107,12 @@ cd tesco-grocery-mcp
 npm install
 npm run build
 ```
+
+To use changes from this checkout, configure your MCP client to run `node` with
+the absolute path to `dist/src/index.js` in this repository. The `npx` examples
+below run the published package, which may not include these changes.
+
+Run the ingredient and MCP integration tests with `npm test`.
 
 ## Configuration
 
